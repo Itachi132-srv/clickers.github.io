@@ -3,105 +3,196 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Click Game</title>
+<title>Tap Rush Game</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-    }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
 
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden;
-        transition: background 0.5s ease;
-        background: #ffd400;
-    }
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    background:#ffd400;
+    transition:0.5s;
+}
 
-    .screen {
-        text-align: center;
-    }
+.gameContainer{
+    width:360px;
+    height:720px;
+    border-radius:35px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 15px 40px rgba(0,0,0,0.4);
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+}
 
-    h1 {
-        font-size: 50px;
-        margin-bottom: 20px;
-        color: white;
-        text-shadow: 2px 2px 10px black;
-    }
+.screen{
+    position:absolute;
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    padding:20px;
+}
 
-    .score {
-        font-size: 35px;
-        color: white;
-        margin-bottom: 20px;
-        text-shadow: 2px 2px 5px black;
-    }
+.title{
+    font-size:48px;
+    color:white;
+    font-weight:700;
+    text-shadow:0 5px 15px rgba(0,0,0,0.4);
+}
 
-    button {
-        padding: 15px 40px;
-        border: none;
-        border-radius: 15px;
-        font-size: 22px;
-        cursor: pointer;
-        transition: 0.2s;
-        background: white;
-        color: black;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
+.subtitle{
+    color:white;
+    opacity:0.9;
+    margin-top:10px;
+    margin-bottom:40px;
+    text-align:center;
+}
 
-    button:hover {
-        transform: scale(1.1);
-    }
+.coolBtn{
+    padding:16px 45px;
+    border:none;
+    border-radius:20px;
+    font-size:22px;
+    font-weight:600;
+    cursor:pointer;
+    background:white;
+    color:black;
+    transition:0.2s;
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
 
-    #gameArea {
-        width: 100vw;
-        height: 100vh;
-        display: none;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        cursor: pointer;
-    }
+.coolBtn:hover{
+    transform:scale(1.08);
+}
 
-    .gameText {
-        color: white;
-        font-size: 45px;
-        text-shadow: 2px 2px 8px black;
-    }
+.coolBtn:active{
+    transform:scale(0.95);
+}
 
-    #gameOver {
-        display: none;
+#gameArea{
+    display:none;
+    user-select:none;
+}
+
+.scoreBox{
+    position:absolute;
+    top:25px;
+    background:rgba(255,255,255,0.2);
+    padding:12px 30px;
+    border-radius:18px;
+    color:white;
+    font-size:28px;
+    font-weight:600;
+    backdrop-filter:blur(10px);
+}
+
+.tapText{
+    font-size:42px;
+    color:white;
+    font-weight:700;
+    text-align:center;
+    text-shadow:0 5px 15px rgba(0,0,0,0.4);
+    animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.08);}
+    100%{transform:scale(1);}
+}
+
+#gameOver{
+    display:none;
+}
+
+.finalScore{
+    color:white;
+    font-size:30px;
+    margin:20px 0 30px;
+    font-weight:600;
+}
+
+.btnGroup{
+    display:flex;
+    gap:15px;
+}
+
+@media(max-width:400px){
+    .gameContainer{
+        width:100vw;
+        height:100vh;
+        border-radius:0;
     }
+}
 </style>
 </head>
 <body>
 
-<!-- START MENU -->
+<div class="gameContainer">
+
+<!-- MENU -->
 <div class="screen" id="menu">
-    <h1>Click Game</h1>
-    <button onclick="startGame()">PLAY</button>
+    <div class="title">TAP RUSH</div>
+    <div class="subtitle">
+        Tap continuously.<br>
+        Stop for 1 second = Lose.
+    </div>
+
+    <button class="coolBtn" onclick="startGame()">
+        PLAY
+    </button>
 </div>
 
-<!-- GAME AREA -->
-<div id="gameArea">
-    <div class="score">Score: <span id="score">0</span></div>
-    <div class="gameText">CLICK FAST!</div>
+<!-- GAME -->
+<div class="screen" id="gameArea">
+
+    <div class="scoreBox">
+        Score: <span id="score">0</span>
+    </div>
+
+    <div class="tapText">
+        TAP FAST ⚡
+    </div>
+
 </div>
 
 <!-- GAME OVER -->
 <div class="screen" id="gameOver">
-    <h1>You Lost!</h1>
-    <div class="score">Final Score: <span id="finalScore">0</span></div>
-    <button onclick="restartGame()">Restart</button>
-    <br><br>
-    <button onclick="goMenu()">Menu</button>
+
+    <div class="title">GAME OVER</div>
+
+    <div class="finalScore">
+        Score: <span id="finalScore">0</span>
+    </div>
+
+    <div class="btnGroup">
+        <button class="coolBtn" onclick="restartGame()">
+            Restart
+        </button>
+
+        <button class="coolBtn" onclick="goMenu()">
+            Menu
+        </button>
+    </div>
+
 </div>
 
 <!-- SOUNDS -->
-<audio id="sound1" src="sound1.mp3"></audio>
+<audio id="sound1" src="sound1.mp3" loop></audio>
 <audio id="sound2" src="sound2.mp3"></audio>
 
 <script>
@@ -110,25 +201,27 @@ let timer;
 
 const colors = [
     '#ffd400',
-    '#ff5733',
-    '#33c1ff',
-    '#9d33ff',
-    '#33ff88',
-    '#ff3380',
+    '#ff6b6b',
+    '#6c5ce7',
     '#00b894',
-    '#fdcb6e'
+    '#0984e3',
+    '#e84393',
+    '#fd79a8',
+    '#00cec9',
+    '#fab1a0'
 ];
 
-const gameArea = document.getElementById('gameArea');
 const menu = document.getElementById('menu');
+const gameArea = document.getElementById('gameArea');
 const gameOver = document.getElementById('gameOver');
+
 const scoreText = document.getElementById('score');
 const finalScore = document.getElementById('finalScore');
 
 const sound1 = document.getElementById('sound1');
 const sound2 = document.getElementById('sound2');
 
-function startGame() {
+function startGame(){
     score = 0;
     scoreText.innerText = score;
 
@@ -138,51 +231,81 @@ function startGame() {
 
     document.body.style.background = colors[0];
 
+    sound1.currentTime = 0;
     sound1.play();
 
     resetTimer();
 }
 
-function resetTimer() {
+function resetTimer(){
     clearTimeout(timer);
 
     timer = setTimeout(() => {
         loseGame();
-    }, 1000);
+    },1000);
 }
 
-function loseGame() {
+function loseGame(){
     gameArea.style.display = 'none';
-    gameOver.style.display = 'block';
+    gameOver.style.display = 'flex';
+
     finalScore.innerText = score;
+
+    sound1.pause();
 }
 
-function restartGame() {
+function restartGame(){
     startGame();
 }
 
-function goMenu() {
+function goMenu(){
     gameOver.style.display = 'none';
-    menu.style.display = 'block';
+    menu.style.display = 'flex';
+
+    sound1.pause();
 }
 
-// CLICK EVENT
-gameArea.addEventListener('click', () => {
+// MULTI TOUCH SUPPORT
+function tapGame(){
+
     score++;
+
     scoreText.innerText = score;
 
     sound2.currentTime = 0;
     sound2.play();
 
-    // COLOR CHANGE EVERY 50 CLICKS
-    if (score >= 10 && score % 50 === 0) {
-        let colorIndex = (score / 50) % colors.length;
-        document.body.style.background = colors[colorIndex];
+    // CHANGE COLOR EVERY 50 CLICKS
+    if(score % 50 === 0){
+        let index = (score / 50) % colors.length;
+        document.body.style.background = colors[index];
     }
 
     resetTimer();
+}
+
+// DESKTOP CLICK
+gameArea.addEventListener('click', tapGame);
+
+// MOBILE MULTI TOUCH
+gameArea.addEventListener('touchstart', (e)=>{
+
+    for(let i=0;i<e.touches.length;i++){
+        tapGame();
+    }
+
 });
+
 </script>
 
 </body>
 </html>
+
+Sound Files
+
+Background music file name: sound1.mp3
+
+Tap click sound file name: sound2.mp3
+
+
+Dono files isi HTML ke folder me rakh dena.

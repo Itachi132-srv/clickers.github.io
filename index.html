@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Click Game</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
 
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        transition: background 0.5s ease;
+        background: #ffd400;
+    }
+
+    .screen {
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 50px;
+        margin-bottom: 20px;
+        color: white;
+        text-shadow: 2px 2px 10px black;
+    }
+
+    .score {
+        font-size: 35px;
+        color: white;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 5px black;
+    }
+
+    button {
+        padding: 15px 40px;
+        border: none;
+        border-radius: 15px;
+        font-size: 22px;
+        cursor: pointer;
+        transition: 0.2s;
+        background: white;
+        color: black;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    button:hover {
+        transform: scale(1.1);
+    }
+
+    #gameArea {
+        width: 100vw;
+        height: 100vh;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        cursor: pointer;
+    }
+
+    .gameText {
+        color: white;
+        font-size: 45px;
+        text-shadow: 2px 2px 8px black;
+    }
+
+    #gameOver {
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<!-- START MENU -->
+<div class="screen" id="menu">
+    <h1>Click Game</h1>
+    <button onclick="startGame()">PLAY</button>
+</div>
+
+<!-- GAME AREA -->
+<div id="gameArea">
+    <div class="score">Score: <span id="score">0</span></div>
+    <div class="gameText">CLICK FAST!</div>
+</div>
+
+<!-- GAME OVER -->
+<div class="screen" id="gameOver">
+    <h1>You Lost!</h1>
+    <div class="score">Final Score: <span id="finalScore">0</span></div>
+    <button onclick="restartGame()">Restart</button>
+    <br><br>
+    <button onclick="goMenu()">Menu</button>
+</div>
+
+<!-- SOUNDS -->
+<audio id="sound1" src="sound1.mp3"></audio>
+<audio id="sound2" src="sound2.mp3"></audio>
+
+<script>
+let score = 0;
+let timer;
+
+const colors = [
+    '#ffd400',
+    '#ff5733',
+    '#33c1ff',
+    '#9d33ff',
+    '#33ff88',
+    '#ff3380',
+    '#00b894',
+    '#fdcb6e'
+];
+
+const gameArea = document.getElementById('gameArea');
+const menu = document.getElementById('menu');
+const gameOver = document.getElementById('gameOver');
+const scoreText = document.getElementById('score');
+const finalScore = document.getElementById('finalScore');
+
+const sound1 = document.getElementById('sound1');
+const sound2 = document.getElementById('sound2');
+
+function startGame() {
+    score = 0;
+    scoreText.innerText = score;
+
+    menu.style.display = 'none';
+    gameOver.style.display = 'none';
+    gameArea.style.display = 'flex';
+
+    document.body.style.background = colors[0];
+
+    sound1.play();
+
+    resetTimer();
+}
+
+function resetTimer() {
+    clearTimeout(timer);
+
+    timer = setTimeout(() => {
+        loseGame();
+    }, 1000);
+}
+
+function loseGame() {
+    gameArea.style.display = 'none';
+    gameOver.style.display = 'block';
+    finalScore.innerText = score;
+}
+
+function restartGame() {
+    startGame();
+}
+
+function goMenu() {
+    gameOver.style.display = 'none';
+    menu.style.display = 'block';
+}
+
+// CLICK EVENT
+gameArea.addEventListener('click', () => {
+    score++;
+    scoreText.innerText = score;
+
+    sound2.currentTime = 0;
+    sound2.play();
+
+    // COLOR CHANGE EVERY 50 CLICKS
+    if (score >= 10 && score % 50 === 0) {
+        let colorIndex = (score / 50) % colors.length;
+        document.body.style.background = colors[colorIndex];
+    }
+
+    resetTimer();
+});
+</script>
+
+</body>
+</html>

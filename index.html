@@ -1,311 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tap Rush Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Taps</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-neon: #00f2ff;
+            --bg-color: #ffeb3b; /* Initial Yellow */
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            transition: background-color 0.8s ease;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-body{
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    overflow:hidden;
-    background:#ffd400;
-    transition:0.5s;
-}
+        /* UI Containers */
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: opacity 0.3s ease;
+        }
 
-.gameContainer{
-    width:360px;
-    height:720px;
-    border-radius:35px;
-    overflow:hidden;
-    position:relative;
-    box-shadow:0 15px 40px rgba(0,0,0,0.4);
-    background:rgba(255,255,255,0.08);
-    backdrop-filter:blur(10px);
-}
+        .hidden { display: none !important; opacity: 0; }
 
-.screen{
-    position:absolute;
-    width:100%;
-    height:100%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    padding:20px;
-}
+        /* Glassmorphism Card */
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 85%;
+            max-width: 400px;
+        }
 
-.title{
-    font-size:48px;
-    color:white;
-    font-weight:700;
-    text-shadow:0 5px 15px rgba(0,0,0,0.4);
-}
+        /* Typography & Glow */
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            margin-bottom: 10px;
+        }
 
-.subtitle{
-    color:white;
-    opacity:0.9;
-    margin-top:10px;
-    margin-bottom:40px;
-    text-align:center;
-}
+        p { color: rgba(255,255,255,0.8); margin-bottom: 30px; }
 
-.coolBtn{
-    padding:16px 45px;
-    border:none;
-    border-radius:20px;
-    font-size:22px;
-    font-weight:600;
-    cursor:pointer;
-    background:white;
-    color:black;
-    transition:0.2s;
-    box-shadow:0 8px 20px rgba(0,0,0,0.3);
-}
+        .score-display {
+            position: absolute;
+            top: 50px;
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
 
-.coolBtn:hover{
-    transform:scale(1.08);
-}
+        .tap-prompt {
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 600;
+            animation: pulse 1.5s infinite;
+        }
 
-.coolBtn:active{
-    transform:scale(0.95);
-}
+        /* Buttons */
+        .btn {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 20px rgba(255,255,255,0.4);
+            margin: 10px;
+            text-transform: uppercase;
+        }
 
-#gameArea{
-    display:none;
-    user-select:none;
-}
+        .btn:active { transform: scale(0.95); box-shadow: 0 0 10px rgba(255,255,255,0.6); }
 
-.scoreBox{
-    position:absolute;
-    top:25px;
-    background:rgba(255,255,255,0.2);
-    padding:12px 30px;
-    border-radius:18px;
-    color:white;
-    font-size:28px;
-    font-weight:600;
-    backdrop-filter:blur(10px);
-}
-
-.tapText{
-    font-size:42px;
-    color:white;
-    font-weight:700;
-    text-align:center;
-    text-shadow:0 5px 15px rgba(0,0,0,0.4);
-    animation:pulse 1s infinite;
-}
-
-@keyframes pulse{
-    0%{transform:scale(1);}
-    50%{transform:scale(1.08);}
-    100%{transform:scale(1);}
-}
-
-#gameOver{
-    display:none;
-}
-
-.finalScore{
-    color:white;
-    font-size:30px;
-    margin:20px 0 30px;
-    font-weight:600;
-}
-
-.btnGroup{
-    display:flex;
-    gap:15px;
-}
-
-@media(max-width:400px){
-    .gameContainer{
-        width:100vw;
-        height:100vh;
-        border-radius:0;
-    }
-}
-</style>
+        @keyframes pulse {
+            0% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.4; transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
 
-<div class="gameContainer">
+    <audio id="sound1" src="sound1.mp3"></audio>
+    <audio id="sound2" src="sound2.mp3"></audio>
 
-<!-- MENU -->
-<div class="screen" id="menu">
-    <div class="title">TAP RUSH</div>
-    <div class="subtitle">
-        Tap continuously.<br>
-        Stop for 1 second = Lose.
+    <div id="start-menu" class="screen">
+        <div class="glass-panel">
+            <h1>VELOCITY</h1>
+            <p>High Speed Tapping</p>
+            <button class="btn" onclick="startGame()">Play</button>
+        </div>
     </div>
 
-    <button class="coolBtn" onclick="startGame()">
-        PLAY
-    </button>
-</div>
-
-<!-- GAME -->
-<div class="screen" id="gameArea">
-
-    <div class="scoreBox">
-        Score: <span id="score">0</span>
+    <div id="gameplay" class="screen hidden" style="background: rgba(0,0,0,0.1);">
+        <div id="score" class="score-display">0</div>
+        <div id="tap-fast" class="tap-prompt">TAP FAST</div>
     </div>
 
-    <div class="tapText">
-        TAP FAST ⚡
+    <div id="game-over" class="screen hidden">
+        <div class="glass-panel">
+            <h1 style="color: #ff4444;">GAME OVER</h1>
+            <p>Final Score</p>
+            <div id="final-score" style="font-size: 3rem; color: white; margin-bottom: 20px; font-weight: 800;">0</div>
+            <button class="btn" onclick="restartGame()">Restart</button>
+            <button class="btn" onclick="showMenu()" style="background: transparent; color: white; border: 2px solid white;">Menu</button>
+        </div>
     </div>
 
-</div>
+    <script>
+        let score = 0;
+        let gameActive = false;
+        let timer = null;
+        const colors = ['#ffeb3b', '#00f2ff', '#70ff00', '#ff007f', '#9d00ff', '#ff5722'];
+        let colorIndex = 0;
 
-<!-- GAME OVER -->
-<div class="screen" id="gameOver">
+        const sfxButton = document.getElementById('sound1');
+        const sfxTap = document.getElementById('sound2');
 
-    <div class="title">GAME OVER</div>
+        const gameplayScreen = document.getElementById('gameplay');
+        const startMenu = document.getElementById('start-menu');
+        const gameOverScreen = document.getElementById('game-over');
+        const scoreElement = document.getElementById('score');
+        const tapPrompt = document.getElementById('tap-fast');
 
-    <div class="finalScore">
-        Score: <span id="finalScore">0</span>
-    </div>
+        function playSound(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {}); // Catch prevents errors if sounds aren't loaded
+        }
 
-    <div class="btnGroup">
-        <button class="coolBtn" onclick="restartGame()">
-            Restart
-        </button>
+        function startGame() {
+            playSound(sfxButton);
+            score = 0;
+            colorIndex = 0;
+            updateScore();
+            document.body.style.backgroundColor = colors[0];
+            
+            startMenu.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            gameplayScreen.classList.remove('hidden');
+            tapPrompt.classList.remove('hidden');
+            
+            gameActive = true;
+        }
 
-        <button class="coolBtn" onclick="goMenu()">
-            Menu
-        </button>
-    </div>
+        function handleTap(e) {
+            if (!gameActive) return;
+            
+            // Handle multi-touch counting
+            const touchCount = e.targetTouches ? e.targetTouches.length : 1;
+            
+            // On first tap, hide the prompt
+            if (score === 0) tapPrompt.classList.add('hidden');
 
-</div>
+            score += touchCount;
+            updateScore();
+            playSound(sfxTap);
+            checkBackgroundChange();
+            resetTimer();
+        }
 
-<!-- SOUNDS -->
-<audio id="sound1" src="sound1.mp3" loop></audio>
-<audio id="sound2" src="sound2.mp3"></audio>
+        function updateScore() {
+            scoreElement.innerText = score;
+        }
 
-<script>
-let score = 0;
-let timer;
+        function resetTimer() {
+            clearTimeout(timer);
+            timer = setTimeout(endGame, 1000);
+        }
 
-const colors = [
-    '#ffd400',
-    '#ff6b6b',
-    '#6c5ce7',
-    '#00b894',
-    '#0984e3',
-    '#e84393',
-    '#fd79a8',
-    '#00cec9',
-    '#fab1a0'
-];
+        function checkBackgroundChange() {
+            let newColorIndex = Math.floor(score / 50) % colors.length;
+            if (newColorIndex !== colorIndex) {
+                colorIndex = newColorIndex;
+                document.body.style.backgroundColor = colors[colorIndex];
+            }
+        }
 
-const menu = document.getElementById('menu');
-const gameArea = document.getElementById('gameArea');
-const gameOver = document.getElementById('gameOver');
+        function endGame() {
+            gameActive = false;
+            clearTimeout(timer);
+            gameplayScreen.classList.add('hidden');
+            gameOverScreen.classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+        }
 
-const scoreText = document.getElementById('score');
-const finalScore = document.getElementById('finalScore');
+        function restartGame() {
+            playSound(sfxButton);
+            startGame();
+        }
 
-const sound1 = document.getElementById('sound1');
-const sound2 = document.getElementById('sound2');
+        function showMenu() {
+            playSound(sfxButton);
+            gameOverScreen.classList.add('hidden');
+            startMenu.classList.remove('hidden');
+            document.body.style.backgroundColor = colors[0];
+        }
 
-function startGame(){
-    score = 0;
-    scoreText.innerText = score;
+        // Listeners for both Touch and Mouse
+        gameplayScreen.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleTap(e);
+        }, { passive: false });
 
-    menu.style.display = 'none';
-    gameOver.style.display = 'none';
-    gameArea.style.display = 'flex';
-
-    document.body.style.background = colors[0];
-
-    sound1.currentTime = 0;
-    sound1.play();
-
-    resetTimer();
-}
-
-function resetTimer(){
-    clearTimeout(timer);
-
-    timer = setTimeout(() => {
-        loseGame();
-    },1000);
-}
-
-function loseGame(){
-    gameArea.style.display = 'none';
-    gameOver.style.display = 'flex';
-
-    finalScore.innerText = score;
-
-    sound1.pause();
-}
-
-function restartGame(){
-    startGame();
-}
-
-function goMenu(){
-    gameOver.style.display = 'none';
-    menu.style.display = 'flex';
-
-    sound1.pause();
-}
-
-// MULTI TOUCH SUPPORT
-function tapGame(){
-
-    score++;
-
-    scoreText.innerText = score;
-
-    sound2.currentTime = 0;
-    sound2.play();
-
-    // CHANGE COLOR EVERY 50 CLICKS
-    if(score % 50 === 0){
-        let index = (score / 50) % colors.length;
-        document.body.style.background = colors[index];
-    }
-
-    resetTimer();
-}
-
-// DESKTOP CLICK
-gameArea.addEventListener('click', tapGame);
-
-// MOBILE MULTI TOUCH
-gameArea.addEventListener('touchstart', (e)=>{
-
-    for(let i=0;i<e.touches.length;i++){
-        tapGame();
-    }
-
-});
-
-</script>
-
+        gameplayScreen.addEventListener('mousedown', (e) => {
+            if (!('ontouchstart' in window)) {
+                handleTap(e);
+            }
+        });
+    </script>
 </body>
 </html>
 
-Sound Files
-
-Background music file name: sound1.mp3
-
-Tap click sound file name: sound2.mp3
-
-
-Dono files isi HTML ke folder me rakh dena.
